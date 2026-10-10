@@ -33,7 +33,7 @@
             font-size: 2.2em;
             margin: 15px 0 10px 0;
         }
-        /* تكبير الصورة وإبرازها */
+        /* الصورة */
         .couple-img {
             width: 100%;
             max-width: 320px;
@@ -50,6 +50,39 @@
             margin: 20px 0;
             line-height: 1.8;
         }
+
+        /* تصميم العداد التنازلي Countdown */
+        .countdown-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #8b5e3c;
+            margin-top: 20px;
+        }
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0 25px 0;
+        }
+        .time-box {
+            background: #faf6f0;
+            border: 1px solid #dfd3c3;
+            padding: 10px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+        .time-box span {
+            display: block;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .time-box label {
+            font-size: 0.75em;
+            color: #8b5e3c;
+            text-transform: uppercase;
+        }
+
         .btn {
             display: block;
             width: 80%;
@@ -129,6 +162,15 @@
         ⛪ <strong>Venue:</strong> Monastery of the Great Martyr Philopater Mercurius (Abu Sifain), Fidmin
     </div>
 
+    <!-- Countdown Section -->
+    <div class="countdown-title">⏳ Counting Down To The Big Day</div>
+    <div class="countdown">
+        <div class="time-box"><span id="days">00</span><label>Days</label></div>
+        <div class="time-box"><span id="hours">00</span><label>Hours</label></div>
+        <div class="time-box"><span id="minutes">00</span><label>Mins</label></div>
+        <div class="time-box"><span id="seconds">00</span><label>Secs</label></div>
+    </div>
+
     <!-- Music Player -->
     <p>🎵 <strong>Music:</strong></p>
     <audio controls autoplay loop>
@@ -159,10 +201,33 @@
 </div>
 
 <script>
+    // Countdown Timer Script
+    const weddingDate = new Date("January 23, 2027 18:00:00").getTime();
+
+    const timer = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = weddingDate - now;
+
+        if (distance > 0) {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? '0' + seconds : seconds;
+        } else {
+            clearInterval(timer);
+            document.querySelector(".countdown").innerHTML = "<h3>🎉 Today is the Big Day! 🎉</h3>";
+        }
+    }, 1000);
+
+    // Guestbook Script
     const form = document.getElementById('guestbookForm');
     const messagesList = document.getElementById('messagesList');
 
-    // Load existing messages from browser storage
     const savedMessages = JSON.parse(localStorage.getItem('wedding_messages') || '[]');
     savedMessages.forEach(msg => addMessageToDOM(msg.name, msg.text));
 
@@ -173,11 +238,8 @@
 
         if (name && text) {
             addMessageToDOM(name, text);
-            
-            // Save locally
             savedMessages.push({ name, text });
             localStorage.setItem('wedding_messages', JSON.stringify(savedMessages));
-
             form.reset();
         }
     });
