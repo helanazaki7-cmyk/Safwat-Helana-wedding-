@@ -31,15 +31,19 @@
         h1 {
             color: #2c3e50;
             font-size: 2.2em;
-            margin: 10px 0;
+            margin: 15px 0 10px 0;
         }
+        /* تكبير الصورة وإبرازها */
         .couple-img {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
+            width: 100%;
+            max-width: 320px;
+            height: 320px;
+            border-radius: 20px;
             object-fit: cover;
-            border: 4px solid #dfd3c3;
-            margin: 15px 0;
+            border: 6px solid #dfd3c3;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            margin: 15px auto;
+            display: block;
         }
         .details {
             font-size: 1.1em;
@@ -57,13 +61,50 @@
             border-radius: 25px;
             font-weight: bold;
             transition: 0.3s;
-        }
-        .btn-secondary {
-            background-color: #c8b6a6;
+            border: none;
+            cursor: pointer;
         }
         audio {
             margin-top: 15px;
             width: 90%;
+        }
+        
+        /* Guestbook Styling */
+        .guestbook-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #dfd3c3;
+            text-align: left;
+        }
+        .guestbook-section h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .guestbook-form input, .guestbook-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #dfd3c3;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .messages-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .message-card {
+            background-color: #faf6f0;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #8b5e3c;
+        }
+        .message-card strong {
+            color: #8b5e3c;
+            display: block;
+            margin-bottom: 3px;
         }
     </style>
 </head>
@@ -102,11 +143,52 @@
         📍 Location (Google Maps)
     </a>
 
-    <!-- Guestbook Google Form Button -->
-    <a href="YOUR_GOOGLE_FORM_LINK_HERE" target="_blank" class="btn btn-secondary">
-        ✍️ Leave a message in our Guestbook
-    </a>
+    <!-- Interactive Guestbook Section -->
+    <div class="guestbook-section">
+        <h3>✍️ Guestbook</h3>
+        <form class="guestbook-form" id="guestbookForm">
+            <input type="text" id="guestName" placeholder="Your Name" required>
+            <textarea id="guestMessage" rows="3" placeholder="Write your blessing or message..." required></textarea>
+            <button type="submit" class="btn" style="width: 100%;">Send Wish 🤍</button>
+        </form>
+
+        <div class="messages-list" id="messagesList">
+            <!-- Messages will appear here dynamically -->
+        </div>
+    </div>
 </div>
+
+<script>
+    const form = document.getElementById('guestbookForm');
+    const messagesList = document.getElementById('messagesList');
+
+    // Load existing messages from browser storage
+    const savedMessages = JSON.parse(localStorage.getItem('wedding_messages') || '[]');
+    savedMessages.forEach(msg => addMessageToDOM(msg.name, msg.text));
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('guestName').value.trim();
+        const text = document.getElementById('guestMessage').value.trim();
+
+        if (name && text) {
+            addMessageToDOM(name, text);
+            
+            // Save locally
+            savedMessages.push({ name, text });
+            localStorage.setItem('wedding_messages', JSON.stringify(savedMessages));
+
+            form.reset();
+        }
+    });
+
+    function addMessageToDOM(name, text) {
+        const card = document.createElement('div');
+        card.className = 'message-card';
+        card.innerHTML = `<strong>${name}</strong><span>${text}</span>`;
+        messagesList.prepend(card);
+    }
+</script>
 
 </body>
 </html>
